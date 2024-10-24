@@ -37,7 +37,7 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif; /* Aplicando el tipo de letra del formulario viejo */
+            font-family: 'Arial', sans-serif;
         }
 
         input[type="submit"] {
@@ -53,7 +53,38 @@
         input[type="submit"]:hover {
             background-color: #03316d;
         }
+
+        /* Agregar estilo para desactivar ciertos campos */
+        input[readonly] {
+            background-color: #f1f1f1;
+            cursor: not-allowed;
+        }
+
     </style>
+    <script>
+        // Función para formatear el monto automáticamente
+        function formatearMonto() {
+            var monto = document.getElementById("monto_pagar").value;
+            if (monto) {
+                var montoFormateado = parseFloat(monto.replace(/,/g, '')).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                document.getElementById("monto_pagar").value = montoFormateado;
+            }
+        }
+
+        // Función para validar las fechas mínimo a partir de 2024
+        function validarFechas() {
+            var fechaEmision = document.getElementById("fecha_emision");
+            var fechaVencimiento = document.getElementById("fecha_vencimiento");
+            
+            // Establecer mínimo para la fecha de emisión y vencimiento
+            fechaEmision.setAttribute("min", "2024-01-01");
+            fechaVencimiento.setAttribute("min", "2024-01-01");
+        }
+
+        window.onload = function() {
+            validarFechas();
+        };
+    </script>
 </head>
 <body>
 
@@ -87,7 +118,7 @@
         $proveedorID = $_POST['id_proveedor'];
         $fechaEmision = $_POST['fecha_emision'];
         $fechaVencimiento = $_POST['fecha_vencimiento'];
-        $montoPagar = $_POST['monto_pagar'];
+        $montoPagar = str_replace(",", "", $_POST['monto_pagar']); // Eliminar comas antes de almacenar
         $estadoPago = $_POST['estado_pago'];
         $metodoPago = $_POST['metodo_pago'];
         $numeroCheque = $_POST['numero_cheque'];
@@ -135,7 +166,7 @@
         <input type="date" id="fecha_vencimiento" name="fecha_vencimiento" required>
 
         <label for="monto_pagar">Monto a Pagar ($):</label>
-        <input type="number" id="monto_pagar" name="monto_pagar" step="0.01" max="9999999999.99" required>
+        <input type="text" id="monto_pagar" name="monto_pagar" onblur="formatearMonto()" required>
 
         <label for="estado_pago">Estado de Pago:</label>
         <select id="estado_pago" name="estado_pago" required>
